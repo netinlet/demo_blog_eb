@@ -28,6 +28,7 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        create_translations(@post)
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
@@ -69,6 +70,10 @@ class PostsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
-      params.require(:post).permit(:title, :body)
+      params.require(:post).permit(:title, :body, :locale)
+    end
+
+    def create_translations(post)
+      %w{es da fr de it ja tlh sv}.each { |locale| Post.delay.create_translated_post(post, locale) }
     end
 end
